@@ -90,6 +90,7 @@ const getAll = (Model) => async (req, res, next) => {
         return next(new CustomError(error));
     }
 };
+
 //
 module.exports = {
     createOne,

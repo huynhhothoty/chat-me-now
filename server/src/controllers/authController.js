@@ -34,7 +34,18 @@ const createAndSendToken = (user, statusCode, res) => {
         expiresIn: process.env.JWT_EXPIRES,
     });
 
-    const filterUser = filterObject(user.toObject(), 'name', 'role', 'email', '_id');
+    const expireDay = process.env.JWT_COOKIE_EXPIRES * 1;
+    const cookieOptions = {
+        expires: new Date(Date.now() + expireDay * 24 * 60 * 60 * 1000),
+        httpOnly: true,
+    };
+
+    //
+    if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+
+    res.cookie('jwt', jwtToken, cookieOptions);
+
+    const filterUser = filterObject(user.toObject(), 'name', 'email', '_id');
     res.status(statusCode).send({
         status: 'ok',
         accessToken: jwtToken,
@@ -44,14 +55,15 @@ const createAndSendToken = (user, statusCode, res) => {
 
 const register = async (req, res, next) => {
     try {
-        const { name, email, password } = req.body;
-        const checkIsExist = await User.findOne({ email });
+        const { name, email, password, phone } = req.body;
+        const checkIsExist = await User.findOne({ email }).lean();
         if (checkIsExist)
             return next(new CustomError('This email is already register!', 400));
         const newUser = new User({
             name,
             email,
             password,
+            phone,
         });
         await newUser.save();
 

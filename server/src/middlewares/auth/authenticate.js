@@ -23,7 +23,9 @@ const authentication = async (req, res, next) => {
     }
 
     // check if this user still exist
-    const testUser = await User.findById(decode.id);
+    const testUser = await User.findById(decode.id).select(
+        '-password -passwordChangedAt -__v'
+    );
     if (!testUser) {
         return next(new CustomError('This user has been remove', 401));
     }

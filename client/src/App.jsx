@@ -1,10 +1,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Login from './pages/Login';
 import AppLayout from './components/AppLayout';
 import ProtectRoute from './components/ProtectRoute';
 import { App as AntApp } from 'antd';
+import { SocketProvider } from './contexts/SocketContext';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -16,24 +17,27 @@ const queryClient = new QueryClient({
 
 function App() {
     return (
-        <AntApp>
-            <QueryClientProvider client={queryClient}>
-                <ReactQueryDevtools initialIsOpen={false} />
-                <BrowserRouter>
-                    <Routes>
-                        <Route element={<Login />} path='/login' />
-                        <Route
-                            path='/'
-                            element={
-                                <ProtectRoute>
-                                    <AppLayout />
-                                </ProtectRoute>
-                            }
-                        />
-                    </Routes>
-                </BrowserRouter>
-            </QueryClientProvider>
-        </AntApp>
+        <SocketProvider>
+            <AntApp>
+                <QueryClientProvider client={queryClient}>
+                    <ReactQueryDevtools initialIsOpen={false} />
+                    <BrowserRouter>
+                        <Routes>
+                            <Route index element={<Navigate replace to='chat' />} />
+                            <Route element={<Login />} path='/login' />
+                            <Route
+                                path='/chat'
+                                element={
+                                    <ProtectRoute>
+                                        <AppLayout />
+                                    </ProtectRoute>
+                                }
+                            />
+                        </Routes>
+                    </BrowserRouter>
+                </QueryClientProvider>
+            </AntApp>
+        </SocketProvider>
     );
 }
 

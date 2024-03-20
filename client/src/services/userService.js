@@ -129,18 +129,14 @@ export async function login({ email, password }) {
     }
 }
 
-export async function getCurrentUser(userToken) {
+export async function getCurrentUser() {
     try {
         const data = await customAxios({
             method: 'get',
             url: getCurUserUrl,
-            headers: {
-                Authorization: `Bearer ${userToken}`,
-                'Content-Type': 'application/json',
-            },
         });
 
-        return data.data.user;
+        return data.data.data;
     } catch (error) {
         return null;
     }

@@ -24,10 +24,9 @@ export function useLogin() {
         mutationFn: ({ email, password }) =>
             loginApi({ email: email, password: password }),
         onSuccess: (data) => {
-            queryClient.setQueryData(['user'], data.user);
             showSuccessNotice(data.user.name);
-            navigate('/');
-            localStorage.setItem('user_token', data.accessToken);
+            queryClient.setQueryData(['user'], data.user);
+            navigate('/chat', { replace: true });
         },
         onError: (err) => {
             showFailedNotice(err.message);
