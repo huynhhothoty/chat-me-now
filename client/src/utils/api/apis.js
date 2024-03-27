@@ -16,6 +16,7 @@ export const userUrl = `${host}/user`;
 export const boxUrl = `${host}/room`;
 export const getOneBoxUrl = (boxId) => `${host}/room/${boxId}`;
 export const boxUrlOfUser = (userId) => `${host}/room?members[$in]=${userId}`;
+export const updateBoxUrl = (roomId) => `${host}/room/${roomId}`;
 
 // message
 export const msgUrl = `${host}/message`;

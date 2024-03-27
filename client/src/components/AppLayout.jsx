@@ -6,6 +6,7 @@ import ChatInfo from '../features/chatInfo/ChatInfo';
 import Header from './Header';
 import { useSearchParams } from 'react-router-dom';
 import ChatBoxPlaceHolder from './ChatBoxPlaceHolder';
+import ChatInfoPlaceHolder from './ChatInfoPlaceHolder';
 
 function AppLayout() {
     const [param] = useSearchParams();
@@ -24,9 +25,7 @@ function AppLayout() {
                 <Col span={12} className='h-[90vh]'>
                     {boxId ? <ChatBox /> : <ChatBoxPlaceHolder />}
                 </Col>
-                <Col span={7}>
-                    <ChatInfo />
-                </Col>
+                <Col span={7}>{boxId ? <ChatInfo /> : <ChatInfoPlaceHolder />}</Col>
             </Row>
         </div>
     );

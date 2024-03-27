@@ -12,7 +12,7 @@ const router = Router();
 router.use(authentication);
 
 router.route('/').post(create).get(getAll);
-router.route('/:id').post(updateOne).get(getOne).delete(deleteOne);
+router.route('/:id').patch(updateOne).get(getOne).delete(deleteOne);
 
 module.exports = {
     router,

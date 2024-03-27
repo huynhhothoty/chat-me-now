@@ -13,6 +13,7 @@ connectDatabase();
 // socket
 const socketIO = require('socket.io');
 const http = require('http');
+const { Message } = require('./models/messageModel');
 const server = http.createServer(app);
 const io = socketIO(server, {
     cors: {
@@ -29,6 +30,15 @@ io.on('connection', (socket) => {
 
         socket.on('sendMsg', () => {
             io.to(roomId).emit('newMsg');
+        });
+        socket.on('addMember', async (data) => {
+            const newNotice = new Message({
+                room: roomId,
+                message: `${data.name} has just joined our room`,
+                type: 'system',
+            });
+            await newNotice.save();
+            io.to(roomId).emit('notice');
         });
     });
 

@@ -11,6 +11,10 @@ const roomSchema = new mongoose.Schema({
         type: String,
         default: 'Chat number ' + Date.now(),
     },
+    avatar: {
+        type: String,
+        default: 'https://cdn0.iconfinder.com/data/icons/avatar-1-2/512/group-2-512.png',
+    },
 });
 
 // middleware

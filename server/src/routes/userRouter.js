@@ -8,9 +8,10 @@ const {
     resetPassword,
     changePassword,
 } = require('../controllers/authController');
-const { getCurrent } = require('../controllers/userController');
+const { getCurrent, getAllUser } = require('../controllers/userController');
 const { authentication } = require('../middlewares/auth/authenticate');
 
+userRouter.route('/').get(authentication, getAllUser);
 userRouter.route('/register').post(register);
 userRouter.route('/login').post(login);
 userRouter.route('/logout').get(logout);

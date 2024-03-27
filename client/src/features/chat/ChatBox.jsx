@@ -25,6 +25,9 @@ function ChatBox() {
         socket.on('newMsg', () => {
             queryClient.invalidateQueries({ queryKey: ['msges'] });
         });
+        socket.on('notice', () => {
+            queryClient.invalidateQueries({ queryKey: ['msges'] });
+        });
     }, [queryClient, socket]);
     useEffect(() => {
         msgRef?.current?.scrollIntoView({ behavior: 'smooth' });
@@ -33,11 +36,13 @@ function ChatBox() {
     const roomId = params.get('room');
     //
     const handleSendMsg = () => {
+        const realText = newMsg.trim().toString();
+        if (realText === '') {
+            setNewMsg('');
+            return;
+        }
         socket.emit('sendMsg');
-        createMsg(
-            { roomId, userId: user._id, msg: newMsg.trim().toString() },
-            { onSuccess: () => setNewMsg('') }
-        );
+        createMsg({ roomId, userId: user._id, msg: realText }, { onSuccess: () => setNewMsg('') });
     };
 
     //
@@ -52,8 +57,10 @@ function ChatBox() {
                         <ChatMessage
                             key={item._id}
                             msg={item.message}
-                            isMine={user._id === item.sender}
+                            isMine={user._id === item?.sender?._id}
+                            sender={item?.sender}
                             msgRef={msgRef}
+                            type={item.type}
                         />
                     ))}
                 </Spin>
@@ -63,7 +70,7 @@ function ChatBox() {
                     value={newMsg}
                     onChange={(e) => setNewMsg(e.target.value)}
                     size='large'
-                    className='px-[20px] [border-radius:20px!important] [border:1px_solid_black]'
+                    className='px-[15px] [border-radius:20px!important] [border:1px_solid_black]'
                     onPressEnter={handleSendMsg}
                     placeholder='Text something...'
                 />

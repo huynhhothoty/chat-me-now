@@ -1,4 +1,4 @@
-import { Col, Row, Spin } from 'antd';
+import { Avatar, Button, Col, Row, Spin } from 'antd';
 import { useUser } from '../features/auth/useUser';
 
 function Header() {
@@ -8,14 +8,16 @@ function Header() {
             <Spin fullscreen spinning={isLoading} />
 
             <Row align='middle' className='w-full'>
-                <Col
-                    span={2}
-                    className='flex items-center justify-center rounded-lg p-[10px] [border:1px_solid_black]'
-                >
-                    <h3>➕ Create new room</h3>
+                <Col span={3} offset={1}>
+                    <Button
+                        className=' hover:[backgroundColor:#EEEEEE!important] hover:[color:black!important]'
+                        size='large'
+                    >
+                        ➕ Create new room
+                    </Button>
                 </Col>
                 <Col span={3} offset={9} className='flex items-center gap-[10px] '>
-                    <div className='h-[50px] w-[50px] rounded-full bg-gray-400 [border:1px_solid_black]'></div>
+                    <Avatar src={user?.avatar} />
                     <h3>{user?.name ?? 'Loading...'}</h3>
                 </Col>
             </Row>
