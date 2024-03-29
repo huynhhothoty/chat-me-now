@@ -27,23 +27,43 @@ io.on('connection', (socket) => {
     // on room
     socket.on('joinRoom', (roomId) => {
         socket.join(roomId);
-
-        socket.on('sendMsg', () => {
-            io.to(roomId).emit('newMsg');
-        });
-        socket.on('addMember', async (data) => {
-            const newNotice = new Message({
-                room: roomId,
-                message: `${data.name} has just joined our room`,
-                type: 'system',
-            });
-            await newNotice.save();
-            io.to(roomId).emit('notice');
-        });
     });
 
+    socket.on('leave', (roomId) => {
+        socket.leave(roomId);
+    });
+
+    socket.on('sendMsg', (roomId) => {
+        io.to(roomId).emit('newMsg');
+    });
+
+    socket.on('addMember', async ({ name, roomId }) => {
+        const newNotice = new Message({
+            room: roomId,
+            message: `${name} has just joined our room`,
+            type: 'system',
+        });
+        await newNotice.save();
+        io.to(roomId).emit('notice');
+    });
+
+    socket.on('remove', async ({ performer, name, roomId }) => {
+        const newNotice = new Message({
+            room: roomId,
+            message: `${performer} has removed ${name} from room`,
+            type: 'system',
+        });
+        await newNotice.save();
+        console.log('remove:', roomId);
+        io.to(roomId).emit('notice');
+    });
+
+    //
     socket.on('disconnect', () => {
-        console.log('User with socket: ' + socket.id + ' has been disconnected');
+        console.log('User disconnected:', socket.id);
+        for (const event of Object.keys(socket.listeners)) {
+            socket.removeAllListeners(event);
+        }
     });
 });
 

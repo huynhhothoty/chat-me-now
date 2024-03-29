@@ -18,31 +18,45 @@ function ChatBox() {
     const { socket } = useSocket();
     const queryClient = useQueryClient();
     const msgRef = useRef(null);
-
+    //
+    const roomId = params.get('room');
     //
     useEffect(() => {
         if (socket === null) return;
-        socket.on('newMsg', () => {
+        const listener = () => {
             queryClient.invalidateQueries({ queryKey: ['msges'] });
-        });
-        socket.on('notice', () => {
-            queryClient.invalidateQueries({ queryKey: ['msges'] });
-        });
+        };
+        socket.on('newMsg', listener);
+        socket.on('notice', listener);
+
+        return () => {
+            socket.off('newMsg');
+            socket.off('notice');
+        };
     }, [queryClient, socket]);
+
+    // scroll the latest message
     useEffect(() => {
         msgRef?.current?.scrollIntoView({ behavior: 'smooth' });
     }, [msg]);
     //
-    const roomId = params.get('room');
-    //
+
     const handleSendMsg = () => {
         const realText = newMsg.trim().toString();
         if (realText === '') {
             setNewMsg('');
             return;
         }
-        socket.emit('sendMsg');
-        createMsg({ roomId, userId: user._id, msg: realText }, { onSuccess: () => setNewMsg('') });
+        createMsg(
+            { roomId, userId: user._id, msg: realText },
+            {
+                onSuccess: () => {
+                    setNewMsg('');
+                    // queryClient.invalidateQueries({ queryKey: ['msges'] });
+                    socket.emit('sendMsg', roomId);
+                },
+            }
+        );
     };
 
     //

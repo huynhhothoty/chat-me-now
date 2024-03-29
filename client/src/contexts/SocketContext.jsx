@@ -7,8 +7,11 @@ function SocketProvider({ children }) {
     const [socket, setSocket] = useState(false);
 
     useEffect(() => {
-        const newSocket = io(rootHost);
-        setSocket(newSocket);
+        let newSocket = null;
+        if (!newSocket) {
+            newSocket = io(rootHost);
+            setSocket(newSocket);
+        }
 
         return () => {
             newSocket.disconnect();

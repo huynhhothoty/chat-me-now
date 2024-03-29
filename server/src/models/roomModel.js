@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { Message } = require('./messageModel');
 
 const roomSchema = new mongoose.Schema({
     members: [

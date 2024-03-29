@@ -3,7 +3,7 @@ import { Avatar, Tooltip } from 'antd';
 function ChatMessage({ msg, isMine, msgRef, sender, type }) {
     if (type === 'system')
         return (
-            <div className='my-[10px]'>
+            <div ref={msgRef} className='my-[10px]'>
                 <p className='text-center text-[10px] italic'>{msg}</p>
             </div>
         );

@@ -1,14 +1,13 @@
 import { SearchOutlined, UserAddOutlined } from '@ant-design/icons';
-import { Avatar, Button, Card, Empty, Input, Modal, Spin } from 'antd';
+import { App, Avatar, Button, Empty, Input, Modal, Spin } from 'antd';
+import { useState } from 'react';
+import { useSocket } from '../../contexts/SocketContext';
+import { useBoxChat } from './useBoxChat';
 import { useEditBox } from './useEditBox';
 import { useFindUser } from './useFindUser';
-import { useState } from 'react';
 import { useUserList } from './useUserList';
-import { useBoxChat } from './useBoxChat';
-import { App } from 'antd';
-import { useSocket } from '../../contexts/SocketContext';
 
-function ListItem({ user, setOpen }) {
+function ListItem({ user, setOpen, isAvailable }) {
     const { edit } = useEditBox();
     const { box } = useBoxChat();
     const { notification } = App.useApp();
@@ -23,7 +22,7 @@ function ListItem({ user, setOpen }) {
                 onSuccess: () => {
                     setOpen(false);
                     notification.success({ message: 'New user has joined your room' });
-                    socket.emit('addMember', { name: user.name });
+                    socket.emit('addMember', { name: user.name, roomId: box._id });
                 },
             }
         );
@@ -35,7 +34,7 @@ function ListItem({ user, setOpen }) {
                 <Avatar src={user.avatar} />
                 <h3>{user.name}</h3>
             </div>
-            <Button onClick={handleAddUser} icon={<UserAddOutlined />}>
+            <Button disabled={isAvailable} onClick={handleAddUser} icon={<UserAddOutlined />}>
                 Add
             </Button>
         </div>
@@ -47,9 +46,11 @@ function AddMemberModal({ open = false, setOpen }) {
     const { findUser, isFinding } = useFindUser();
     const [data, setData] = useState('');
     const { users, isLoadingUserList } = useUserList();
+    const { box } = useBoxChat();
+    //
+    const memListId = box.members.map((ele) => ele._id);
     return (
         <Modal
-            destroyOnClose={true}
             title='Find user'
             open={open}
             centered
@@ -73,7 +74,12 @@ function AddMemberModal({ open = false, setOpen }) {
                 <Spin spinning={isFinding || isLoadingUserList || isEditing}>
                     <div className='max-h-[500px] overflow-auto'>
                         {users?.map((user) => (
-                            <ListItem key={user._id} user={user} setOpen={setOpen} />
+                            <ListItem
+                                key={user._id}
+                                user={user}
+                                setOpen={setOpen}
+                                isAvailable={memListId.includes(user._id)}
+                            />
                         ))}
                     </div>
                 </Spin>

@@ -7,7 +7,8 @@ function BoxListItem({ box }) {
     const [searchParams, setSearchParams] = useSearchParams();
     const { socket } = useSocket();
     const handleChooseBox = (id) => {
-        socket.emit('joinRoom', id);
+        const oldRoom = searchParams.get('room');
+        if (oldRoom) socket.emit('leave', oldRoom);
         searchParams.set('room', id);
         setSearchParams(searchParams);
     };
